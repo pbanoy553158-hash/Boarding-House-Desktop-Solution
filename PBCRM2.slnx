@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="PBCRM2.api/PBCRM2.api.csproj" />
+  <Project Path="PBCRM2.domain/PBCRM2.domain.csproj" />
+  <Project Path="PBCRM2.infrastructure/PBCRM2.infrastructure.csproj" />
+  <Project Path="PBCRM2/PBCRM2.winforms.csproj" />
+</Solution>
