@@ -1,0 +1,842 @@
+﻿<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    ```
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Percy's Boarding House - Feedback</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f8f5ef;
+            color: #37302a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: #ffffff;
+            border: 1px solid #e1d7c8;
+            border-radius: 16px;
+            padding: 35px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .logo-area {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .logo-circle {
+            width: 85px;
+            height: 85px;
+            margin: 0 auto 15px;
+            border-radius: 50%;
+            background: #483320;
+            color: #e0c28c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        h1 {
+            margin: 0;
+            color: #483320;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            margin-top: 8px;
+            color: #786e64;
+            font-size: 15px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 25px;
+            color: #786e64;
+        }
+
+        .feedback-form {
+            display: none;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #483320;
+            margin-bottom: 12px;
+        }
+
+        .stars {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 20px 0 30px;
+        }
+
+        .star {
+            border: none;
+            background: transparent;
+            font-size: 42px;
+            color: #d8d0c5;
+            cursor: pointer;
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+
+            .star:hover {
+                transform: scale(1.08);
+            }
+
+            .star.selected {
+                color: #d9a250;
+            }
+
+        .rating-text {
+            text-align: center;
+            color: #786e64;
+            font-size: 14px;
+            margin-top: -20px;
+            margin-bottom: 25px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 140px;
+            resize: vertical;
+            padding: 14px;
+            border: 1px solid #d9d0c4;
+            border-radius: 10px;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 15px;
+            outline: none;
+        }
+
+            textarea:focus {
+                border-color: #aa8250;
+            }
+
+        .submit-button {
+            width: 100%;
+            margin-top: 20px;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background: #aa8250;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+            .submit-button:hover {
+                background: #946f43;
+            }
+
+            .submit-button:disabled {
+                background: #c8b9a7;
+                cursor: not-allowed;
+            }
+
+        .message {
+            display: none;
+            padding: 14px;
+            margin-top: 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .error-message {
+            background: #fbeaea;
+            color: #9b3333;
+            border: 1px solid #e4bcbc;
+        }
+
+        .success-message {
+            background: #edf7ee;
+            color: #36733d;
+            border: 1px solid #bfd9c2;
+        }
+
+        .success-screen {
+            display: none;
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .success-icon {
+            width: 75px;
+            height: 75px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            background: #edf7ee;
+            color: #36733d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 38px;
+        }
+
+        .success-screen h2 {
+            color: #483320;
+            margin-bottom: 10px;
+        }
+
+        .success-screen p {
+            color: #786e64;
+            line-height: 1.6;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            color: #968b80;
+            font-size: 12px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 15px;
+            }
+
+            .container {
+                padding: 25px 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .star {
+                font-size: 36px;
+            }
+        }
+    </style>
+    ```
+
+</head>
+
+<body>
+
+    ```
+    <div class="container">
+
+        <div class="logo-area">
+
+            <div class="logo-circle">
+                P
+            </div>
+
+            <h1>
+                Percy's Boarding House
+            </h1>
+
+            <div class="subtitle">
+                Tenant Feedback
+            </div>
+
+        </div>
+
+        <div id="loading"
+             class="loading">
+
+            Checking your feedback request...
+
+        </div>
+
+        <div id="errorMessage"
+             class="message error-message">
+        </div>
+
+        <div id="feedbackForm"
+             class="feedback-form">
+
+            <div class="section-title">
+                How would you rate your experience?
+            </div>
+
+            <div class="stars">
+
+                <button type="button"
+                        class="star"
+                        data-rating="1">
+                    ★
+                </button>
+
+                <button type="button"
+                        class="star"
+                        data-rating="2">
+                    ★
+                </button>
+
+                <button type="button"
+                        class="star"
+                        data-rating="3">
+                    ★
+                </button>
+
+                <button type="button"
+                        class="star"
+                        data-rating="4">
+                    ★
+                </button>
+
+                <button type="button"
+                        class="star"
+                        data-rating="5">
+                    ★
+                </button>
+
+            </div>
+
+            <div id="ratingText"
+                 class="rating-text">
+
+                Please select a rating.
+
+            </div>
+
+            <div class="section-title">
+                Additional Comments
+            </div>
+
+            <textarea id="comment"
+                      maxlength="1000"
+                      placeholder="Tell us about your experience..."></textarea>
+
+            <button id="submitButton"
+                    class="submit-button"
+                    type="button">
+
+                Submit Feedback
+
+            </button>
+
+            <div id="submitError"
+                 class="message error-message">
+            </div>
+
+        </div>
+
+        <div id="successScreen"
+             class="success-screen">
+
+            <div class="success-icon">
+                ✓
+            </div>
+
+            <h2>
+                Thank You!
+            </h2>
+
+            <p>
+                Your feedback has been submitted successfully.
+            </p>
+
+            <p>
+                We appreciate you taking the time to share
+                your experience with Percy's Boarding House.
+            </p>
+
+        </div>
+
+        <div class="footer">
+
+            Percy's Boarding House<br>
+            Customer Relationship Management System
+
+        </div>
+
+    </div>
+
+    <script>
+
+        /*
+         * PBCRM2 API
+         *
+         * Your API is currently running on:
+         * https://localhost:7241
+         */
+        const API_BASE_URL = "https://localhost:7241";
+
+
+        let companyId = null;
+
+        let token = null;
+
+        let selectedRating = 0;
+
+
+        const loading =
+            document.getElementById("loading");
+
+        const errorMessage =
+            document.getElementById("errorMessage");
+
+        const feedbackForm =
+            document.getElementById("feedbackForm");
+
+        const successScreen =
+            document.getElementById("successScreen");
+
+        const ratingText =
+            document.getElementById("ratingText");
+
+        const comment =
+            document.getElementById("comment");
+
+        const submitButton =
+            document.getElementById("submitButton");
+
+        const submitError =
+            document.getElementById("submitError");
+
+        const stars =
+            document.querySelectorAll(".star");
+
+
+        /*
+         * Get company ID and token
+         *
+         * Expected URL:
+         *
+         * /feedback/{companyId}/{token}
+         */
+        function getFeedbackInformation() {
+
+            const pathParts =
+                window.location.pathname
+                    .split("/")
+                    .filter(
+                        part => part.length > 0
+                    );
+
+
+            const feedbackIndex =
+                pathParts.indexOf("feedback");
+
+
+            if (feedbackIndex === -1) {
+
+                return false;
+
+            }
+
+
+            companyId =
+                pathParts[feedbackIndex + 1];
+
+
+            token =
+                pathParts[feedbackIndex + 2];
+
+
+            if (
+                !companyId ||
+                !token
+            ) {
+
+                return false;
+
+            }
+
+
+            return true;
+        }
+
+
+        /*
+         * Display error message
+         */
+        function showError(message) {
+
+            loading.style.display = "none";
+
+            feedbackForm.style.display = "none";
+
+            errorMessage.textContent = message;
+
+            errorMessage.style.display = "block";
+        }
+
+
+        /*
+         * Safely read JSON response
+         *
+         * This prevents the page from crashing if
+         * the API returns an HTML/error response.
+         */
+        async function readJsonResponse(response) {
+
+            const responseText =
+                await response.text();
+
+            if (!responseText) {
+
+                return {};
+
+            }
+
+            try {
+
+                return JSON.parse(responseText);
+
+            }
+            catch {
+
+                return {
+                    message:
+                        responseText
+                };
+
+            }
+        }
+
+
+        /*
+         * Check the feedback request
+         */
+        async function loadFeedbackRequest() {
+
+            if (!getFeedbackInformation()) {
+
+                showError(
+                    "Invalid feedback link."
+                );
+
+                return;
+
+            }
+
+
+            const apiUrl =
+                `${API_BASE_URL}/api/public-feedback/${companyId}/${token}`;
+
+
+            console.log(
+                "Checking feedback request:"
+            );
+
+            console.log(apiUrl);
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        apiUrl,
+                        {
+                            method: "GET",
+                            headers: {
+                                "Accept":
+                                    "application/json"
+                            }
+                        }
+                    );
+
+
+                const data =
+                    await readJsonResponse(
+                        response
+                    );
+
+
+                console.log(
+                    "Feedback API response:",
+                    response.status,
+                    data
+                );
+
+
+                if (!response.ok) {
+
+                    showError(
+                        data.message ||
+                        "This feedback request is no longer available."
+                    );
+
+                    return;
+
+                }
+
+
+                if (
+                    data.valid === false
+                ) {
+
+                    showError(
+                        data.message ||
+                        "This feedback request is no longer available."
+                    );
+
+                    return;
+
+                }
+
+
+                loading.style.display =
+                    "none";
+
+                feedbackForm.style.display =
+                    "block";
+
+            }
+            catch (error) {
+
+                console.error(
+                    "Feedback API connection error:",
+                    error
+                );
+
+
+                showError(
+                    "Unable to connect to the feedback service. Please make sure the PBCRM2 API is running."
+                );
+
+            }
+
+        }
+
+
+        /*
+         * Select star rating
+         */
+        stars.forEach(
+            star => {
+
+                star.addEventListener(
+                    "click",
+                    function () {
+
+                        selectedRating =
+                            Number(
+                                this.dataset.rating
+                            );
+
+
+                        stars.forEach(
+                            currentStar => {
+
+                                const rating =
+                                    Number(
+                                        currentStar.dataset.rating
+                                    );
+
+
+                                if (
+                                    rating <=
+                                    selectedRating
+                                ) {
+
+                                    currentStar.classList.add(
+                                        "selected"
+                                    );
+
+                                }
+                                else {
+
+                                    currentStar.classList.remove(
+                                        "selected"
+                                    );
+
+                                }
+
+                            }
+                        );
+
+
+                        const ratingLabels = {
+
+                            1:
+                                "Very Poor",
+
+                            2:
+                                "Poor",
+
+                            3:
+                                "Average",
+
+                            4:
+                                "Good",
+
+                            5:
+                                "Excellent"
+
+                        };
+
+
+                        ratingText.textContent =
+                            ratingLabels[
+                            selectedRating
+                            ];
+
+                    }
+                );
+
+            }
+        );
+
+
+        /*
+         * Submit feedback
+         */
+        submitButton.addEventListener(
+            "click",
+            async function () {
+
+                submitError.style.display =
+                    "none";
+
+
+                if (
+                    selectedRating < 1 ||
+                    selectedRating > 5
+                ) {
+
+                    submitError.textContent =
+                        "Please select a rating before submitting.";
+
+                    submitError.style.display =
+                        "block";
+
+                    return;
+
+                }
+
+
+                submitButton.disabled =
+                    true;
+
+                submitButton.textContent =
+                    "Submitting...";
+
+
+                const apiUrl =
+                    `${API_BASE_URL}/api/public-feedback/${companyId}/${token}`;
+
+
+                try {
+
+                    const response =
+                        await fetch(
+                            apiUrl,
+                            {
+                                method:
+                                    "POST",
+
+                                headers: {
+                                    "Content-Type":
+                                        "application/json",
+
+                                    "Accept":
+                                        "application/json"
+                                },
+
+                                body:
+                                    JSON.stringify(
+                                        {
+                                            rating:
+                                                selectedRating,
+
+                                            comment:
+                                                comment.value.trim()
+                                        }
+                                    )
+                            }
+                        );
+
+
+                    const data =
+                        await readJsonResponse(
+                            response
+                        );
+
+
+                    console.log(
+                        "Submit feedback response:",
+                        response.status,
+                        data
+                    );
+
+
+                    if (!response.ok) {
+
+                        submitError.textContent =
+                            data.message ||
+                            "Unable to submit your feedback.";
+
+                        submitError.style.display =
+                            "block";
+
+                        submitButton.disabled =
+                            false;
+
+                        submitButton.textContent =
+                            "Submit Feedback";
+
+                        return;
+
+                    }
+
+
+                    feedbackForm.style.display =
+                        "none";
+
+                    successScreen.style.display =
+                        "block";
+
+                }
+                catch (error) {
+
+                    console.error(
+                        "Feedback submission connection error:",
+                        error
+                    );
+
+
+                    submitError.textContent =
+                        "Unable to connect to the feedback service. Please make sure the PBCRM2 API is running.";
+
+                    submitError.style.display =
+                        "block";
+
+                    submitButton.disabled =
+                        false;
+
+                    submitButton.textContent =
+                        "Submit Feedback";
+
+                }
+
+            }
+        );
+
+
+        /*
+         * Start feedback page
+         */
+        loadFeedbackRequest();
+
+    </script>
+    ```
+
+</body>
+</html>

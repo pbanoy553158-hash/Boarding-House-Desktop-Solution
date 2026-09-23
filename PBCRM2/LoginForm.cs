@@ -1,6 +1,11 @@
+using PBCRM2;
 using PBCRM2.WinForms.Services;
 using System.ComponentModel;
 using System.Drawing.Drawing2D;
+using System;
+using System.IO;
+using System.Linq;
+using System.Windows.Forms;
 
 namespace PBCRM2
 {
@@ -29,6 +34,7 @@ namespace PBCRM2
         private const int FieldHeight = 48;
 
         private readonly ApiService _apiService;
+
         private TextBox txtUsername = null!;
         private TextBox txtPassword = null!;
         private Button btnLogin = null!;
@@ -65,6 +71,7 @@ namespace PBCRM2
 
             Controls.Add(divider);
             divider.BringToFront();
+
             AcceptButton = btnLogin;
         }
 
@@ -78,26 +85,69 @@ namespace PBCRM2
 
             public GradientPanel()
             {
-                SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
+                SetStyle(
+                    ControlStyles.OptimizedDoubleBuffer |
+                    ControlStyles.AllPaintingInWmPaint |
+                    ControlStyles.UserPaint,
+                    true);
             }
 
             protected override void OnPaint(PaintEventArgs e)
             {
-                using var brush = new LinearGradientBrush(ClientRectangle, TopColor, BottomColor, LinearGradientMode.ForwardDiagonal);
-                e.Graphics.FillRectangle(brush, ClientRectangle);
+                using var brush = new LinearGradientBrush(
+                    ClientRectangle,
+                    TopColor,
+                    BottomColor,
+                    LinearGradientMode.ForwardDiagonal);
+
+                e.Graphics.FillRectangle(
+                    brush,
+                    ClientRectangle);
+
                 base.OnPaint(e);
             }
         }
 
-        private static GraphicsPath CreateRoundedPath(Rectangle rect, int radius)
+        private static GraphicsPath CreateRoundedPath(
+            Rectangle rect,
+            int radius)
         {
             var path = new GraphicsPath();
+
             int diameter = radius * 2;
 
-            path.AddArc(rect.X, rect.Y, diameter, diameter, 180, 90);
-            path.AddArc(rect.Right - diameter, rect.Y, diameter, diameter, 270, 90);
-            path.AddArc(rect.Right - diameter, rect.Bottom - diameter, diameter, diameter, 0, 90);
-            path.AddArc(rect.X, rect.Bottom - diameter, diameter, diameter, 90, 90);
+            path.AddArc(
+                rect.X,
+                rect.Y,
+                diameter,
+                diameter,
+                180,
+                90);
+
+            path.AddArc(
+                rect.Right - diameter,
+                rect.Y,
+                diameter,
+                diameter,
+                270,
+                90);
+
+            path.AddArc(
+                rect.Right - diameter,
+                rect.Bottom - diameter,
+                diameter,
+                diameter,
+                0,
+                90);
+
+            path.AddArc(
+                rect.X,
+                rect.Bottom - diameter,
+                diameter,
+                diameter,
+                90,
+                90);
+
             path.CloseFigure();
 
             return path;
@@ -113,21 +163,45 @@ namespace PBCRM2
 
             public RoundedPanel()
             {
-                SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
+                SetStyle(
+                    ControlStyles.OptimizedDoubleBuffer |
+                    ControlStyles.AllPaintingInWmPaint |
+                    ControlStyles.UserPaint,
+                    true);
             }
 
             protected override void OnPaint(PaintEventArgs e)
             {
-                e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+                e.Graphics.SmoothingMode =
+                    SmoothingMode.AntiAlias;
 
-                var rect = new Rectangle(0, 0, Width - 1, Height - 1);
+                var rect =
+                    new Rectangle(
+                        0,
+                        0,
+                        Width - 1,
+                        Height - 1);
 
-                using var path = CreateRoundedPath(rect, CornerRadius);
-                using var fill = new SolidBrush(BackColor);
-                using var pen = new Pen(BorderColor, 1.4f);
+                using var path =
+                    CreateRoundedPath(
+                        rect,
+                        CornerRadius);
 
-                e.Graphics.FillPath(fill, path);
-                e.Graphics.DrawPath(pen, path);
+                using var fill =
+                    new SolidBrush(BackColor);
+
+                using var pen =
+                    new Pen(
+                        BorderColor,
+                        1.4f);
+
+                e.Graphics.FillPath(
+                    fill,
+                    path);
+
+                e.Graphics.DrawPath(
+                    pen,
+                    path);
 
                 base.OnPaint(e);
             }
@@ -138,18 +212,26 @@ namespace PBCRM2
             var panel = new GradientPanel
             {
                 Location = new Point(0, 0),
-                Size = new Size(BrandPanelWidth, FormHeight),
+                Size = new Size(
+                    BrandPanelWidth,
+                    FormHeight),
                 BackColor = BrandBg,
                 TopColor = BrandBgTop,
                 BottomColor = BrandBg
             };
 
-            var logoSize = new Size(180, 180);
-            var logoLocation = new Point((BrandPanelWidth - logoSize.Width) / 2, 40);
+            var logoSize =
+                new Size(180, 180);
+
+            var logoLocation =
+                new Point(
+                    (BrandPanelWidth - logoSize.Width) / 2,
+                    40);
 
             var logo = new PictureBox
             {
-                SizeMode = PictureBoxSizeMode.Zoom,
+                SizeMode =
+                    PictureBoxSizeMode.Zoom,
                 Size = logoSize,
                 Location = logoLocation,
                 BackColor = Color.Transparent
@@ -159,23 +241,34 @@ namespace PBCRM2
             {
                 Text = "PB",
                 ForeColor = BrandAccent,
-                Font = new Font("Segoe UI", 44, FontStyle.Bold),
+                Font = new Font(
+                    "Segoe UI",
+                    44,
+                    FontStyle.Bold),
                 AutoSize = false,
-                TextAlign = ContentAlignment.MiddleCenter,
+                TextAlign =
+                    ContentAlignment.MiddleCenter,
                 Size = logoSize,
                 Location = logoLocation,
                 BackColor = Color.Transparent,
                 Visible = false
             };
 
-            var logoPath = Path.Combine(AppContext.BaseDirectory, "Resources", "logo.png");
+            var logoPath =
+                Path.Combine(
+                    AppContext.BaseDirectory,
+                    "Resources",
+                    "logo.png");
 
             if (File.Exists(logoPath))
             {
                 try
                 {
-                    using var image = Image.FromFile(logoPath);
-                    logo.Image = new Bitmap(image);
+                    using var image =
+                        Image.FromFile(logoPath);
+
+                    logo.Image =
+                        new Bitmap(image);
                 }
                 catch
                 {
@@ -193,31 +286,60 @@ namespace PBCRM2
             {
                 Text = "PERCY'S BOARDING HOUSE",
                 ForeColor = BrandAccent,
-                Font = new Font("Segoe UI", 11, FontStyle.Bold),
+                Font = new Font(
+                    "Segoe UI",
+                    11,
+                    FontStyle.Bold),
                 AutoSize = false,
-                TextAlign = ContentAlignment.MiddleCenter,
-                Size = new Size(BrandPanelWidth, 24),
-                Location = new Point(0, 235),
+                TextAlign =
+                    ContentAlignment.MiddleCenter,
+                Size =
+                    new Size(
+                        BrandPanelWidth,
+                        24),
+                Location =
+                    new Point(
+                        0,
+                        235),
                 BackColor = Color.Transparent
             };
 
             var rule = new Panel
             {
                 Size = new Size(60, 2),
-                Location = new Point((BrandPanelWidth - 60) / 2, 262),
+                Location =
+                    new Point(
+                        (BrandPanelWidth - 60) / 2,
+                        262),
                 BackColor = BrandAccent
             };
 
             var description = new Label
             {
-                Text = "A centralized system for managing tenants, rooms, payments, maintenance, feedback, and boarding house operations.",
-                ForeColor = Color.FromArgb(220, 215, 205),
-                Font = new Font("Segoe UI", 10f),
-                TextAlign = ContentAlignment.TopCenter,
+                Text =
+                    "A centralized system for managing tenants, rooms, payments, maintenance, feedback, and boarding house operations.",
+                ForeColor =
+                    Color.FromArgb(
+                        220,
+                        215,
+                        205),
+                Font =
+                    new Font(
+                        "Segoe UI",
+                        10f),
+                TextAlign =
+                    ContentAlignment.TopCenter,
                 AutoSize = false,
-                Size = new Size(340, 100),
-                Location = new Point((BrandPanelWidth - 340) / 2, 280),
-                BackColor = Color.Transparent
+                Size =
+                    new Size(
+                        340,
+                        100),
+                Location =
+                    new Point(
+                        (BrandPanelWidth - 340) / 2,
+                        280),
+                BackColor =
+                    Color.Transparent
             };
 
             panel.Controls.Add(logo);
@@ -233,43 +355,71 @@ namespace PBCRM2
 
         private void AddBrandBadges(Panel parent)
         {
-            var badges = new (string Icon, string Label)[]
-            {
-                ("\U0001F6E1", "SECURE"),
-                ("\u2601", "CENTRALIZED"),
-                ("\u26A1", "EFFICIENT")
-            };
+            var badges =
+                new (string Icon, string Label)[]
+                {
+                    ("\U0001F6E1", "SECURE"),
+                    ("\u2601", "CENTRALIZED"),
+                    ("\u26A1", "EFFICIENT")
+                };
 
             const int slotWidth = 140;
             const int rowY = 520;
 
-            for (int i = 0; i < badges.Length; i++)
+            for (int i = 0;
+                 i < badges.Length;
+                 i++)
             {
                 var badge = badges[i];
+
                 var x = i * slotWidth;
 
                 var icon = new Label
                 {
                     Text = badge.Icon,
-                    Font = new Font("Segoe UI Emoji", 14),
+                    Font =
+                        new Font(
+                            "Segoe UI Emoji",
+                            14),
                     ForeColor = BrandAccent,
                     AutoSize = false,
-                    TextAlign = ContentAlignment.MiddleCenter,
-                    Size = new Size(slotWidth, 26),
-                    Location = new Point(x, rowY),
-                    BackColor = Color.Transparent
+                    TextAlign =
+                        ContentAlignment.MiddleCenter,
+                    Size =
+                        new Size(
+                            slotWidth,
+                            26),
+                    Location =
+                        new Point(
+                            x,
+                            rowY),
+                    BackColor =
+                        Color.Transparent
                 };
 
                 var caption = new Label
                 {
                     Text = badge.Label,
-                    Font = new Font("Segoe UI", 8, FontStyle.Bold),
-                    ForeColor = BrandAccentDim,
+                    Font =
+                        new Font(
+                            "Segoe UI",
+                            8,
+                            FontStyle.Bold),
+                    ForeColor =
+                        BrandAccentDim,
                     AutoSize = false,
-                    TextAlign = ContentAlignment.MiddleCenter,
-                    Size = new Size(slotWidth, 18),
-                    Location = new Point(x, rowY + 28),
-                    BackColor = Color.Transparent
+                    TextAlign =
+                        ContentAlignment.MiddleCenter,
+                    Size =
+                        new Size(
+                            slotWidth,
+                            18),
+                    Location =
+                        new Point(
+                            x,
+                            rowY + 28),
+                    BackColor =
+                        Color.Transparent
                 };
 
                 parent.Controls.Add(icon);
@@ -277,12 +427,23 @@ namespace PBCRM2
 
                 if (i < badges.Length - 1)
                 {
-                    parent.Controls.Add(new Panel
-                    {
-                        Size = new Size(1, 40),
-                        Location = new Point(x + slotWidth, rowY + 3),
-                        BackColor = Color.FromArgb(90, 70, 50)
-                    });
+                    parent.Controls.Add(
+                        new Panel
+                        {
+                            Size =
+                                new Size(
+                                    1,
+                                    40),
+                            Location =
+                                new Point(
+                                    x + slotWidth,
+                                    rowY + 3),
+                            BackColor =
+                                Color.FromArgb(
+                                    90,
+                                    70,
+                                    50)
+                        });
                 }
             }
         }
@@ -291,63 +452,120 @@ namespace PBCRM2
         {
             var panel = new GradientPanel
             {
-                Location = new Point(BrandPanelWidth, 0),
-                Size = new Size(FormWidth - BrandPanelWidth, FormHeight),
+                Location =
+                    new Point(
+                        BrandPanelWidth,
+                        0),
+                Size =
+                    new Size(
+                        FormWidth - BrandPanelWidth,
+                        FormHeight),
                 BackColor = PanelBg,
                 TopColor = PanelBg,
                 BottomColor = PanelBgWarm
             };
 
-            var rightWidth = FormWidth - BrandPanelWidth;
+            var rightWidth =
+                FormWidth - BrandPanelWidth;
 
-            panel.Controls.Add(new Label
-            {
-                Text = "Welcome Back",
-                ForeColor = TextDark,
-                Font = new Font("Segoe UI", 24, FontStyle.Bold),
-                AutoSize = true,
-                Location = new Point(RightContentLeft - 3, 60),
-                BackColor = Color.Transparent
-            });
+            panel.Controls.Add(
+                new Label
+                {
+                    Text = "Welcome Back",
+                    ForeColor = TextDark,
+                    Font =
+                        new Font(
+                            "Segoe UI",
+                            24,
+                            FontStyle.Bold),
+                    AutoSize = true,
+                    Location =
+                        new Point(
+                            RightContentLeft - 3,
+                            60),
+                    BackColor =
+                        Color.Transparent
+                });
 
-            panel.Controls.Add(new Label
-            {
-                Text = "Sign in to access your CRM dashboard",
-                ForeColor = TextMuted,
-                Font = new Font("Segoe UI", 11),
-                AutoSize = true,
-                Location = new Point(RightContentLeft, 108),
-                BackColor = Color.Transparent
-            });
+            panel.Controls.Add(
+                new Label
+                {
+                    Text =
+                        "Sign in to access your CRM dashboard",
+                    ForeColor = TextMuted,
+                    Font =
+                        new Font(
+                            "Segoe UI",
+                            11),
+                    AutoSize = true,
+                    Location =
+                        new Point(
+                            RightContentLeft,
+                            108),
+                    BackColor =
+                        Color.Transparent
+                });
 
-            var card = BuildLoginCard();
-            card.Location = new Point(RightContentLeft, 170);
+            var card =
+                BuildLoginCard();
+
+            card.Location =
+                new Point(
+                    RightContentLeft,
+                    170);
+
             panel.Controls.Add(card);
 
             lblMessage = new Label
             {
                 Text = "",
-                Location = new Point(RightContentLeft, 480),
-                Size = new Size(CardWidth, 30),
-                ForeColor = Color.Firebrick,
-                Font = new Font("Segoe UI", 9),
-                TextAlign = ContentAlignment.MiddleCenter,
-                BackColor = Color.Transparent
+                Location =
+                    new Point(
+                        RightContentLeft,
+                        480),
+                Size =
+                    new Size(
+                        CardWidth,
+                        30),
+                ForeColor =
+                    Color.Firebrick,
+                Font =
+                    new Font(
+                        "Segoe UI",
+                        9),
+                TextAlign =
+                    ContentAlignment.MiddleCenter,
+                BackColor =
+                    Color.Transparent
             };
 
             panel.Controls.Add(lblMessage);
 
-            panel.Controls.Add(new Label
-            {
-                Text = "PBCRM2  •  Boarding House CRM System",
-                ForeColor = Color.DarkGray,
-                Font = new Font("Segoe UI", 8),
-                AutoSize = false,
-                TextAlign = ContentAlignment.MiddleCenter,
-                Size = new Size(rightWidth, 20),
-                Location = new Point(0, 545),
-                BackColor = Color.Transparent
-            });
+            panel.Controls.Add(
+                new Label
+                {
+                    Text =
+                        "PBCRM2  •  Boarding House CRM System",
+                    ForeColor =
+                        Color.DarkGray,
+                    Font =
+                        new Font(
+                            "Segoe UI",
+                            8),
+                    AutoSize = false,
+                    TextAlign =
+                        ContentAlignment.MiddleCenter,
+                    Size =
+                        new Size(
+                            rightWidth,
+                            20),
+                    Location =
+                        new Point(
+                            0,
+                            545),
+                    BackColor =
+                        Color.Transparent
+                });
 
             return panel;
         }
@@ -355,80 +573,153 @@ namespace PBCRM2
         private RoundedPanel BuildLoginCard()
         {
             const int padding = 28;
-            const int contentWidth = CardWidth - padding * 2;
+            const int contentWidth =
+                CardWidth - padding * 2;
 
             var card = new RoundedPanel
             {
-                Size = new Size(CardWidth, 300),
+                Size =
+                    new Size(
+                        CardWidth,
+                        300),
                 BackColor = Color.White,
                 BorderColor = FieldBorder,
                 CornerRadius = 18
             };
 
-            card.Controls.Add(new Label
-            {
-                Text = "USERNAME",
-                ForeColor = TextMuted,
-                Font = new Font("Segoe UI", 8, FontStyle.Bold),
-                AutoSize = true,
-                Location = new Point(padding, 24)
-            });
+            card.Controls.Add(
+                new Label
+                {
+                    Text = "USERNAME",
+                    ForeColor = TextMuted,
+                    Font =
+                        new Font(
+                            "Segoe UI",
+                            8,
+                            FontStyle.Bold),
+                    AutoSize = true,
+                    Location =
+                        new Point(
+                            padding,
+                            24)
+                });
 
-            var usernameField = BuildFieldContainer(contentWidth, out txtUsername, "\U0001F464");
-            usernameField.Location = new Point(padding, 46);
+            var usernameField =
+                BuildFieldContainer(
+                    contentWidth,
+                    out txtUsername,
+                    "\U0001F464");
+
+            usernameField.Location =
+                new Point(
+                    padding,
+                    46);
+
             card.Controls.Add(usernameField);
 
-            card.Controls.Add(new Label
-            {
-                Text = "PASSWORD",
-                ForeColor = TextMuted,
-                Font = new Font("Segoe UI", 8, FontStyle.Bold),
-                AutoSize = true,
-                Location = new Point(padding, 120)
-            });
+            card.Controls.Add(
+                new Label
+                {
+                    Text = "PASSWORD",
+                    ForeColor = TextMuted,
+                    Font =
+                        new Font(
+                            "Segoe UI",
+                            8,
+                            FontStyle.Bold),
+                    AutoSize = true,
+                    Location =
+                        new Point(
+                            padding,
+                            120)
+                });
 
-            var passwordField = BuildPasswordFieldContainer(contentWidth);
-            passwordField.Location = new Point(padding, 142);
+            var passwordField =
+                BuildPasswordFieldContainer(
+                    contentWidth);
+
+            passwordField.Location =
+                new Point(
+                    padding,
+                    142);
+
             card.Controls.Add(passwordField);
 
             btnLogin = new Button
             {
                 Text = "SIGN IN",
-                Location = new Point(padding, 220),
-                Size = new Size(contentWidth, 50),
-                Font = new Font("Segoe UI", 11.5f, FontStyle.Bold),
+                Location =
+                    new Point(
+                        padding,
+                        220),
+                Size =
+                    new Size(
+                        contentWidth,
+                        50),
+                Font =
+                    new Font(
+                        "Segoe UI",
+                        11.5f,
+                        FontStyle.Bold),
                 BackColor = CtaColor,
                 ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat,
-                Cursor = Cursors.Hand
+                FlatStyle =
+                    FlatStyle.Flat,
+                Cursor =
+                    Cursors.Hand
             };
 
             btnLogin.FlatAppearance.BorderSize = 0;
-            btnLogin.Region = new Region(CreateRoundedPath(new Rectangle(0, 0, btnLogin.Width, btnLogin.Height), 10));
 
-            btnLogin.MouseEnter += (s, e) =>
-            {
-                if (btnLogin.Enabled)
-                    btnLogin.BackColor = CtaColorHover;
-            };
+            btnLogin.Region =
+                new Region(
+                    CreateRoundedPath(
+                        new Rectangle(
+                            0,
+                            0,
+                            btnLogin.Width,
+                            btnLogin.Height),
+                        10));
 
-            btnLogin.MouseLeave += (s, e) =>
-            {
-                if (btnLogin.Enabled)
-                    btnLogin.BackColor = CtaColor;
-            };
+            btnLogin.MouseEnter +=
+                (s, e) =>
+                {
+                    if (btnLogin.Enabled)
+                    {
+                        btnLogin.BackColor =
+                            CtaColorHover;
+                    }
+                };
 
-            btnLogin.Click += BtnLogin_Click;
+            btnLogin.MouseLeave +=
+                (s, e) =>
+                {
+                    if (btnLogin.Enabled)
+                    {
+                        btnLogin.BackColor =
+                            CtaColor;
+                    }
+                };
+
+            btnLogin.Click +=
+                BtnLogin_Click;
+
             card.Controls.Add(btnLogin);
 
             return card;
         }
 
-        private RoundedPanel BuildFieldContainer(int width, out TextBox textBox, string iconGlyph)
+        private RoundedPanel BuildFieldContainer(
+            int width,
+            out TextBox textBox,
+            string iconGlyph)
         {
             var container = new RoundedPanel
             {
-                Size = new Size(width, FieldHeight),
+                Size =
+                    new Size(
+                        width,
+                        FieldHeight),
                 BackColor = Color.White,
                 BorderColor = FieldBorder,
                 CornerRadius = 12
@@ -437,49 +728,89 @@ namespace PBCRM2
             var icon = new Label
             {
                 Text = iconGlyph,
-                Font = new Font("Segoe UI Emoji", 12),
+                Font =
+                    new Font(
+                        "Segoe UI Emoji",
+                        12),
                 ForeColor = FieldLabel,
                 AutoSize = false,
-                TextAlign = ContentAlignment.MiddleCenter,
-                Size = new Size(28, 28),
-                Location = new Point(10, (FieldHeight - 28) / 2)
+                TextAlign =
+                    ContentAlignment.MiddleCenter,
+                Size =
+                    new Size(
+                        28,
+                        28),
+                Location =
+                    new Point(
+                        10,
+                        (FieldHeight - 28) / 2)
             };
 
             var field = new TextBox
             {
-                BorderStyle = BorderStyle.None,
-                Font = new Font("Segoe UI", 11),
-                Location = new Point(46, (FieldHeight - 24) / 2),
-                Size = new Size(width - 60, 24)
+                BorderStyle =
+                    BorderStyle.None,
+                Font =
+                    new Font(
+                        "Segoe UI",
+                        11),
+                Location =
+                    new Point(
+                        46,
+                        (FieldHeight - 24) / 2),
+                Size =
+                    new Size(
+                        width - 60,
+                        24)
             };
 
-            field.Enter += (s, e) =>
-            {
-                container.BorderColor = FieldBorderFocus;
-                icon.ForeColor = CtaColor;
-                container.Invalidate();
-            };
+            field.Enter +=
+                (s, e) =>
+                {
+                    container.BorderColor =
+                        FieldBorderFocus;
 
-            field.Leave += (s, e) =>
-            {
-                container.BorderColor = FieldBorder;
-                icon.ForeColor = FieldLabel;
-                container.Invalidate();
-            };
+                    icon.ForeColor =
+                        CtaColor;
+
+                    container.Invalidate();
+                };
+
+            field.Leave +=
+                (s, e) =>
+                {
+                    container.BorderColor =
+                        FieldBorder;
+
+                    icon.ForeColor =
+                        FieldLabel;
+
+                    container.Invalidate();
+                };
 
             container.Controls.Add(icon);
             container.Controls.Add(field);
-            container.Click += (s, e) => field.Focus();
+
+            container.Click +=
+                (s, e) =>
+                {
+                    field.Focus();
+                };
 
             textBox = field;
+
             return container;
         }
 
-        private RoundedPanel BuildPasswordFieldContainer(int width)
+        private RoundedPanel BuildPasswordFieldContainer(
+            int width)
         {
             var container = new RoundedPanel
             {
-                Size = new Size(width, FieldHeight),
+                Size =
+                    new Size(
+                        width,
+                        FieldHeight),
                 BackColor = Color.White,
                 BorderColor = FieldBorder,
                 CornerRadius = 12
@@ -488,97 +819,247 @@ namespace PBCRM2
             var icon = new Label
             {
                 Text = "\U0001F512",
-                Font = new Font("Segoe UI Emoji", 12),
+                Font =
+                    new Font(
+                        "Segoe UI Emoji",
+                        12),
                 ForeColor = FieldLabel,
                 AutoSize = false,
-                TextAlign = ContentAlignment.MiddleCenter,
-                Size = new Size(28, 28),
-                Location = new Point(10, (FieldHeight - 28) / 2)
+                TextAlign =
+                    ContentAlignment.MiddleCenter,
+                Size =
+                    new Size(
+                        28,
+                        28),
+                Location =
+                    new Point(
+                        10,
+                        (FieldHeight - 28) / 2)
             };
 
             txtPassword = new TextBox
             {
-                BorderStyle = BorderStyle.None,
-                Font = new Font("Segoe UI", 11),
+                BorderStyle =
+                    BorderStyle.None,
+                Font =
+                    new Font(
+                        "Segoe UI",
+                        11),
                 UseSystemPasswordChar = true,
-                Location = new Point(46, (FieldHeight - 24) / 2),
-                Size = new Size(width - 90, 24)
+                Location =
+                    new Point(
+                        46,
+                        (FieldHeight - 24) / 2),
+                Size =
+                    new Size(
+                        width - 90,
+                        24)
             };
 
             lblEyeToggle = new Label
             {
                 Text = "\U0001F441",
-                Font = new Font("Segoe UI Emoji", 12),
+                Font =
+                    new Font(
+                        "Segoe UI Emoji",
+                        12),
                 ForeColor = FieldLabel,
                 AutoSize = false,
-                TextAlign = ContentAlignment.MiddleCenter,
-                Size = new Size(28, 28),
-                Location = new Point(width - 38, (FieldHeight - 28) / 2),
-                Cursor = Cursors.Hand
+                TextAlign =
+                    ContentAlignment.MiddleCenter,
+                Size =
+                    new Size(
+                        28,
+                        28),
+                Location =
+                    new Point(
+                        width - 38,
+                        (FieldHeight - 28) / 2),
+                Cursor =
+                    Cursors.Hand
             };
 
-            lblEyeToggle.Click += LblEyeToggle_Click;
+            lblEyeToggle.Click +=
+                LblEyeToggle_Click;
 
-            txtPassword.Enter += (s, e) =>
-            {
-                container.BorderColor = FieldBorderFocus;
-                icon.ForeColor = CtaColor;
-                container.Invalidate();
-            };
+            txtPassword.Enter +=
+                (s, e) =>
+                {
+                    container.BorderColor =
+                        FieldBorderFocus;
 
-            txtPassword.Leave += (s, e) =>
-            {
-                container.BorderColor = FieldBorder;
-                icon.ForeColor = FieldLabel;
-                container.Invalidate();
-            };
+                    icon.ForeColor =
+                        CtaColor;
+
+                    container.Invalidate();
+                };
+
+            txtPassword.Leave +=
+                (s, e) =>
+                {
+                    container.BorderColor =
+                        FieldBorder;
+
+                    icon.ForeColor =
+                        FieldLabel;
+
+                    container.Invalidate();
+                };
 
             container.Controls.Add(icon);
             container.Controls.Add(txtPassword);
             container.Controls.Add(lblEyeToggle);
-            container.Click += (s, e) => txtPassword.Focus();
+
+            container.Click +=
+                (s, e) =>
+                {
+                    txtPassword.Focus();
+                };
 
             return container;
         }
 
-        private void LblEyeToggle_Click(object? sender, EventArgs e)
+        private void LblEyeToggle_Click(
+            object? sender,
+            EventArgs e)
         {
-            txtPassword.UseSystemPasswordChar = !txtPassword.UseSystemPasswordChar;
-            lblEyeToggle.ForeColor = txtPassword.UseSystemPasswordChar ? FieldLabel : CtaColor;
+            txtPassword.UseSystemPasswordChar =
+                !txtPassword.UseSystemPasswordChar;
+
+            lblEyeToggle.ForeColor =
+                txtPassword.UseSystemPasswordChar
+                    ? FieldLabel
+                    : CtaColor;
         }
 
-        private async void BtnLogin_Click(object? sender, EventArgs e)
+        private void ResetLoginScreen()
         {
-            var username = txtUsername.Text.Trim();
-            var password = txtPassword.Text;
+            txtPassword.Clear();
 
-            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+            txtPassword.UseSystemPasswordChar =
+                true;
+
+            lblEyeToggle.ForeColor =
+                FieldLabel;
+
+            lblMessage.Text =
+                string.Empty;
+
+            lblMessage.ForeColor =
+                Color.Firebrick;
+
+            btnLogin.Enabled =
+                true;
+
+            btnLogin.BackColor =
+                CtaColor;
+
+            btnLogin.Text =
+                "SIGN IN";
+
+            Show();
+
+            WindowState =
+                FormWindowState.Normal;
+
+            Activate();
+            BringToFront();
+
+            txtUsername.Focus();
+        }
+
+        private async void BtnLogin_Click(
+            object? sender,
+            EventArgs e)
+        {
+            var username =
+                txtUsername.Text.Trim();
+
+            var password =
+                txtPassword.Text;
+
+            if (
+                string.IsNullOrWhiteSpace(username) ||
+                string.IsNullOrWhiteSpace(password))
             {
-                lblMessage.ForeColor = Color.Firebrick;
-                lblMessage.Text = "Please enter your username and password.";
+                lblMessage.ForeColor =
+                    Color.Firebrick;
+
+                lblMessage.Text =
+                    "Please enter your username and password.";
+
                 return;
             }
 
             btnLogin.Enabled = false;
-            btnLogin.BackColor = CtaColorDisabled;
-            btnLogin.Text = "SIGNING IN...";
-            lblMessage.ForeColor = Color.DimGray;
-            lblMessage.Text = "Connecting to the server...";
+
+            btnLogin.BackColor =
+                CtaColorDisabled;
+
+            btnLogin.Text =
+                "SIGNING IN...";
+
+            lblMessage.ForeColor =
+                Color.DimGray;
+
+            lblMessage.Text =
+                "Connecting to the server...";
 
             try
             {
-                var result = await _apiService.LoginAsync(username, password);
+                var result =
+                    await _apiService.LoginAsync(
+                        username,
+                        password);
 
                 if (result == null)
                 {
-                    lblMessage.ForeColor = Color.Firebrick;
-                    lblMessage.Text = "Invalid username or password.";
+                    lblMessage.ForeColor =
+                        Color.Firebrick;
+
+                    lblMessage.Text =
+                        "Invalid username or password.";
+
                     return;
                 }
 
-                _apiService.SetToken(result.Token);
+                if (
+                    string.IsNullOrWhiteSpace(
+                        result.Token))
+                {
+                    lblMessage.ForeColor =
+                        Color.Firebrick;
 
-                var role = result.Roles?.FirstOrDefault()?.Trim();
+                    lblMessage.Text =
+                        "The server did not return a valid login token.";
+
+                    return;
+                }
+
+                // =================================================
+                // SAVE LOGIN SESSION
+                // Stores:
+                // Role
+                // CompanyId
+                // BranchId
+                // =================================================
+
+                _apiService.SetToken(
+                    result.Token);
+
+                _apiService.SetLoginSession(
+                    result);
+
+                string fullName =
+                    string.IsNullOrWhiteSpace(
+                        result.FullName)
+                        ? result.Username ?? "User"
+                        : result.FullName;
+
+                string? role =
+                    result.Roles?
+                        .FirstOrDefault()?
+                        .Trim();
 
                 if (string.IsNullOrWhiteSpace(role))
                 {
@@ -587,21 +1068,34 @@ namespace PBCRM2
                         "Access Denied",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Warning);
+
                     return;
                 }
 
-                var fullName = string.IsNullOrWhiteSpace(result.FullName)
-                    ? username
-                    : result.FullName;
+                Form? dashboard =
+                    role.ToLowerInvariant() switch
+                    {
+                        "superadmin" =>
+                            new SuperAdminDashboardForm(
+                                _apiService),
 
-                Form? dashboard = role.ToLowerInvariant() switch
-                {
-                    "superadmin" => new SuperAdminDashboardForm(fullName),
-                    "admin" => new AdminDashboardForm(fullName),
-                    "manager" => new ManagerDashboardForm(fullName),
-                    "staff" => new StaffDashboardForm(fullName),
-                    _ => null
-                };
+                        "admin" =>
+                            new AdminDashboardForm(
+                                _apiService,
+                                fullName),
+
+                        "manager" =>
+                            new ManagerDashboardForm(
+                                _apiService,
+                                fullName),
+
+                        "staff" =>
+                            new StaffDashboardForm(
+                                _apiService,
+                                fullName),
+
+                        _ => null
+                    };
 
                 if (dashboard == null)
                 {
@@ -610,18 +1104,36 @@ namespace PBCRM2
                         "Access Denied",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Warning);
+
                     return;
                 }
 
                 Hide();
 
-                dashboard.FormClosed += (s, args) => Close();
+                dashboard.FormClosed +=
+                    (s, args) =>
+                    {
+                        if (
+                            dashboard.DialogResult ==
+                            DialogResult.Retry)
+                        {
+                            ResetLoginScreen();
+                        }
+                        else
+                        {
+                            Close();
+                        }
+                    };
+
                 dashboard.Show();
             }
             catch (Exception ex)
             {
-                lblMessage.ForeColor = Color.Firebrick;
-                lblMessage.Text = "Unable to connect to the API.";
+                lblMessage.ForeColor =
+                    Color.Firebrick;
+
+                lblMessage.Text =
+                    "Unable to connect to the API.";
 
                 MessageBox.Show(
                     ex.Message,
@@ -631,9 +1143,17 @@ namespace PBCRM2
             }
             finally
             {
-                btnLogin.Enabled = true;
-                btnLogin.BackColor = CtaColor;
-                btnLogin.Text = "SIGN IN    \u2192";
+                if (!IsDisposed)
+                {
+                    btnLogin.Enabled =
+                        true;
+
+                    btnLogin.BackColor =
+                        CtaColor;
+
+                    btnLogin.Text =
+                        "SIGN IN";
+                }
             }
         }
     }

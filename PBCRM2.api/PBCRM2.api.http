@@ -1,6 +1,14 @@
-@PBCRM2.api_HostAddress = http://localhost:5037
+@PBCRM2.api_HostAddress = https://localhost:7241
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3ZGJkYmY0Yi1hYWIxLTQ2YmItOTYzYS1lZmU5ZDM5Yzk3MGEiLCJ1bmlxdWVfbmFtZSI6ImFkbWluIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6ImFkbWluIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZWlkZW50aWZpZXIiOiI3ZGJkYmY0Yi1hYWIxLTQ2YmItOTYzYS1lZmU5ZDM5Yzk3MGEiLCJmdWxsTmFtZSI6IlN5c3RlbSBBZG1pbmlzdHJhdG9yIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQWRtaW4iLCJleHAiOjE3ODkzNDM2NTYsImlzcyI6IlBCQ1JNMi5hcGkiLCJhdWQiOiJQQkNSTTIud2luZm9ybXMifQ.cS8bT3wefjGezEKSmDInocTkAahsZU5_Zvc8B7IP2hE
 
-GET {{PBCRM2.api_HostAddress}}/weatherforecast/
+### Get all branches
+GET {{PBCRM2.api_HostAddress}}/api/Branches
+Authorization: Bearer {{token}}
 Accept: application/json
 
 ###
+
+### Get all tenants
+GET {{PBCRM2.api_HostAddress}}/api/Tenants
+Authorization: Bearer {{token}}
+Accept: application/json

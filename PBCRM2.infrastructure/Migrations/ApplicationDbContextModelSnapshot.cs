@@ -188,6 +188,83 @@ namespace PBCRM2.infrastructure.Migrations
                     b.ToTable("Beds");
                 });
 
+            modelBuilder.Entity("PBCRM2.Domain.Entities.BedAssignmentRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("ApprovedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ApprovedByUserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("BedId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RejectionReason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("RequestedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RequestedByUserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TenantId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BedId");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("BedAssignmentRequests");
+                });
+
+            modelBuilder.Entity("PBCRM2.Domain.Entities.Billing", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("BillingPeriodEnd")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("BillingPeriodStart")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DueDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("MonthlyRentalAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TenantId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("Billings");
+                });
+
             modelBuilder.Entity("PBCRM2.Domain.Entities.Branch", b =>
                 {
                     b.Property<int>("Id")
@@ -214,6 +291,78 @@ namespace PBCRM2.infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Branches");
+                });
+
+            modelBuilder.Entity("PBCRM2.Domain.Entities.Company", b =>
+                {
+                    b.Property<int>("CompanyId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CompanyId"));
+
+                    b.Property<string>("CompanyCode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("CompanyName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.HasKey("CompanyId");
+
+                    b.HasIndex("CompanyCode")
+                        .IsUnique();
+
+                    b.ToTable("Companies");
+                });
+
+            modelBuilder.Entity("PBCRM2.Domain.Entities.CompanyDatabase", b =>
+                {
+                    b.Property<int>("CompanyDatabaseId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CompanyDatabaseId"));
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CredentialKey")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("DatabaseName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("ServerName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("CompanyDatabaseId");
+
+                    b.HasIndex("CompanyId");
+
+                    b.ToTable("CompanyDatabases");
                 });
 
             modelBuilder.Entity("PBCRM2.Domain.Entities.Feedback", b =>
@@ -301,6 +450,9 @@ namespace PBCRM2.infrastructure.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<int>("BillingId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
 
@@ -322,6 +474,8 @@ namespace PBCRM2.infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BillingId");
 
                     b.HasIndex("TenantId");
 
@@ -383,6 +537,14 @@ namespace PBCRM2.infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("RoomType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("BranchId");
@@ -398,26 +560,51 @@ namespace PBCRM2.infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Address")
+                    b.Property<DateTime?>("ActualMoveOutDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("BranchId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ContactNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("CurrentAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Address");
+
+                    b.Property<DateTime>("DateOfBirth")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FirstName")
+                    b.Property<string>("EmergencyContactName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("LastName")
+                    b.Property<string>("EmergencyContactNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PhoneNumber")
+                    b.Property<string>("EmergencyRelationship")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("MoveInDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Sex")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -426,6 +613,8 @@ namespace PBCRM2.infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BranchId");
 
                     b.ToTable("Tenants");
                 });
@@ -439,6 +628,9 @@ namespace PBCRM2.infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<int?>("BranchId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CompanyId")
                         .HasColumnType("int");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -556,7 +748,7 @@ namespace PBCRM2.infrastructure.Migrations
             modelBuilder.Entity("PBCRM2.Domain.Entities.Bed", b =>
                 {
                     b.HasOne("PBCRM2.Domain.Entities.Room", "Room")
-                        .WithMany()
+                        .WithMany("Beds")
                         .HasForeignKey("RoomId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -569,6 +761,47 @@ namespace PBCRM2.infrastructure.Migrations
                     b.Navigation("Room");
 
                     b.Navigation("Tenant");
+                });
+
+            modelBuilder.Entity("PBCRM2.Domain.Entities.BedAssignmentRequest", b =>
+                {
+                    b.HasOne("PBCRM2.Domain.Entities.Bed", "Bed")
+                        .WithMany()
+                        .HasForeignKey("BedId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("PBCRM2.Domain.Entities.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Bed");
+
+                    b.Navigation("Tenant");
+                });
+
+            modelBuilder.Entity("PBCRM2.Domain.Entities.Billing", b =>
+                {
+                    b.HasOne("PBCRM2.Domain.Entities.Tenant", "Tenant")
+                        .WithMany("Billings")
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Tenant");
+                });
+
+            modelBuilder.Entity("PBCRM2.Domain.Entities.CompanyDatabase", b =>
+                {
+                    b.HasOne("PBCRM2.Domain.Entities.Company", "Company")
+                        .WithMany("CompanyDatabases")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
                 });
 
             modelBuilder.Entity("PBCRM2.Domain.Entities.Feedback", b =>
@@ -595,11 +828,19 @@ namespace PBCRM2.infrastructure.Migrations
 
             modelBuilder.Entity("PBCRM2.Domain.Entities.Payment", b =>
                 {
+                    b.HasOne("PBCRM2.Domain.Entities.Billing", "Billing")
+                        .WithMany("Payments")
+                        .HasForeignKey("BillingId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("PBCRM2.Domain.Entities.Tenant", "Tenant")
                         .WithMany("Payments")
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Billing");
 
                     b.Navigation("Tenant");
                 });
@@ -628,7 +869,35 @@ namespace PBCRM2.infrastructure.Migrations
 
             modelBuilder.Entity("PBCRM2.Domain.Entities.Tenant", b =>
                 {
+                    b.HasOne("PBCRM2.Domain.Entities.Branch", "Branch")
+                        .WithMany()
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Branch");
+                });
+
+            modelBuilder.Entity("PBCRM2.Domain.Entities.Billing", b =>
+                {
+                    b.Navigation("Payments");
+                });
+
+            modelBuilder.Entity("PBCRM2.Domain.Entities.Company", b =>
+                {
+                    b.Navigation("CompanyDatabases");
+                });
+
+            modelBuilder.Entity("PBCRM2.Domain.Entities.Room", b =>
+                {
+                    b.Navigation("Beds");
+                });
+
+            modelBuilder.Entity("PBCRM2.Domain.Entities.Tenant", b =>
+                {
                     b.Navigation("Bed");
+
+                    b.Navigation("Billings");
 
                     b.Navigation("Feedbacks");
 

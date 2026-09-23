@@ -10,76 +10,150 @@ namespace PBCRM2.Infrastructure.Services;
 
 public class JwtTokenService
 {
-    private readonly UserManager<ApplicationUser> _userManager;
     private readonly IConfiguration _configuration;
+    private readonly UserManager<ApplicationUser> _userManager;
 
     public JwtTokenService(
-        UserManager<ApplicationUser> userManager,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        UserManager<ApplicationUser> userManager)
     {
-        _userManager = userManager;
         _configuration = configuration;
+        _userManager = userManager;
     }
 
-    public async Task<string> CreateTokenAsync(ApplicationUser user)
+    // =========================================================
+    // CREATE JWT TOKEN
+    // =========================================================
+
+    public async Task<string> CreateTokenAsync(
+        ApplicationUser user)
     {
-        var roles = await _userManager.GetRolesAsync(user);
+        // -----------------------------------------------------
+        // GET ROLES
+        // -----------------------------------------------------
 
-        var claims = new List<Claim>
-        {
-            new Claim(
-                JwtRegisteredClaimNames.Sub,
-                user.Id),
+        var roles =
+            await _userManager.GetRolesAsync(user);
 
-            new Claim(
-                JwtRegisteredClaimNames.UniqueName,
-                user.UserName ?? string.Empty),
+        // -----------------------------------------------------
+        // GET JWT SETTINGS
+        // -----------------------------------------------------
 
-            new Claim(
-                ClaimTypes.Name,
-                user.UserName ?? string.Empty),
-
-            new Claim(
-                ClaimTypes.NameIdentifier,
-                user.Id),
-
-            new Claim(
-                "fullName",
-                user.FullName ?? string.Empty)
-        };
-
-        foreach (var role in roles)
-        {
-            claims.Add(new Claim(
-                ClaimTypes.Role,
-                role));
-        }
-
-        var key = _configuration["Jwt:Key"]
+        var jwtKey =
+            _configuration["Jwt:Key"]
             ?? throw new InvalidOperationException(
                 "JWT key is not configured.");
 
-        var issuer = _configuration["Jwt:Issuer"]
+        var jwtIssuer =
+            _configuration["Jwt:Issuer"]
             ?? throw new InvalidOperationException(
                 "JWT issuer is not configured.");
 
-        var audience = _configuration["Jwt:Audience"]
+        var jwtAudience =
+            _configuration["Jwt:Audience"]
             ?? throw new InvalidOperationException(
                 "JWT audience is not configured.");
 
-        var securityKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(key));
+        // -----------------------------------------------------
+        // CREATE CLAIMS
+        // -----------------------------------------------------
 
-        var credentials = new SigningCredentials(
-            securityKey,
-            SecurityAlgorithms.HmacSha256);
+        var claims =
+            new List<Claim>
+            {
+                // User identity
+                new Claim(
+                    JwtRegisteredClaimNames.Sub,
+                    user.Id),
 
-        var token = new JwtSecurityToken(
-            issuer: issuer,
-            audience: audience,
-            claims: claims,
-            expires: DateTime.UtcNow.AddHours(8),
-            signingCredentials: credentials);
+                new Claim(
+                    JwtRegisteredClaimNames.UniqueName,
+                    user.UserName ?? string.Empty),
+
+                new Claim(
+                    ClaimTypes.NameIdentifier,
+                    user.Id),
+
+                new Claim(
+                    ClaimTypes.Name,
+                    user.UserName ?? string.Empty),
+
+                // Full name
+                new Claim(
+                    "FullName",
+                    user.FullName ?? string.Empty)
+            };
+
+        // -----------------------------------------------------
+        // COMPANY CLAIM
+        // -----------------------------------------------------
+        // This identifies the System Tenant / Company.
+        //
+        // It is NOT the boarding-house renter TenantId.
+        // -----------------------------------------------------
+
+        if (user.CompanyId.HasValue)
+        {
+            claims.Add(
+                new Claim(
+                    "CompanyId",
+                    user.CompanyId.Value.ToString()));
+        }
+
+        // -----------------------------------------------------
+        // BRANCH CLAIM
+        // -----------------------------------------------------
+        // Manager/Staff can have a branch.
+        // -----------------------------------------------------
+
+        if (user.BranchId.HasValue)
+        {
+            claims.Add(
+                new Claim(
+                    "BranchId",
+                    user.BranchId.Value.ToString()));
+        }
+
+        // -----------------------------------------------------
+        // ROLE CLAIMS
+        // -----------------------------------------------------
+
+        foreach (var role in roles)
+        {
+            claims.Add(
+                new Claim(
+                    ClaimTypes.Role,
+                    role));
+        }
+
+        // -----------------------------------------------------
+        // CREATE SIGNING KEY
+        // -----------------------------------------------------
+
+        var key =
+            new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(jwtKey));
+
+        var credentials =
+            new SigningCredentials(
+                key,
+                SecurityAlgorithms.HmacSha256);
+
+        // -----------------------------------------------------
+        // CREATE TOKEN
+        // -----------------------------------------------------
+
+        var token =
+            new JwtSecurityToken(
+                issuer: jwtIssuer,
+                audience: jwtAudience,
+                claims: claims,
+                expires: DateTime.UtcNow.AddHours(8),
+                signingCredentials: credentials);
+
+        // -----------------------------------------------------
+        // RETURN TOKEN STRING
+        // -----------------------------------------------------
 
         return new JwtSecurityTokenHandler()
             .WriteToken(token);

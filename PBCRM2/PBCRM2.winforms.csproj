@@ -18,4 +18,10 @@
 	  </Content>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <EmbeddedResource Update="StaffMaintenanceForm.resx">
+	    <Generator></Generator>
+	  </EmbeddedResource>
+	</ItemGroup>
+
 </Project>
